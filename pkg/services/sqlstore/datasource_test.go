@@ -245,7 +245,7 @@ func TestDataAccess(t *testing.T) {
 			return nil
 		})
 
-		err := DeleteDataSource(&models.DeleteDataSourceCommand{ID: ds.Id, UID: "nisse-uid", Name: "nisse", OrgID: 123123})
+		err := DeleteDataSource(&models.DeleteDataSourceCommand{ID: ds.Id, UID: ds.Uid, Name: ds.Name, OrgID: ds.OrgId})
 		require.NoError(t, err)
 
 		require.Eventually(t, func() bool {
@@ -253,9 +253,27 @@ func TestDataAccess(t *testing.T) {
 		}, time.Second, time.Millisecond)
 
 		require.Equal(t, ds.Id, deleted.ID)
-		require.Equal(t, int64(123123), deleted.OrgID)
-		require.Equal(t, "nisse", deleted.Name)
-		require.Equal(t, "nisse-uid", deleted.UID)
+		require.Equal(t, ds.OrgId, deleted.OrgID)
+		require.Equal(t, ds.Name, deleted.Name)
+		require.Equal(t, ds.Uid, deleted.UID)
+	})
+
+	t.Run("does not fire a deleted event when the datasource does not exist", func(t *testing.T) {
+		InitTestDB(t)
+		ds := initDatasource()
+
+		var deleted *events.DataSourceDeleted
+		bus.AddEventListener(func(e *events.DataSourceDeleted) error {
+			deleted = e
+			return nil
+		})
+
+		err := DeleteDataSource(&models.DeleteDataSourceCommand{ID: 99999999, UID: "example-missing", Name: "example-missing-datasource", OrgID: ds.OrgId})
+		require.NoError(t, err)
+
+		require.Never(t, func() bool {
+			return deleted != nil
+		}, time.Second, time.Millisecond)
 	})
 
 	t.Run("DeleteDataSourceByName", func(t *testing.T) {
