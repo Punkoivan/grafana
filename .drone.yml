@@ -8,30 +8,6 @@ platform:
   arch: amd64
 
 steps:
-- name: identify-runner
-  image: alpine:3.14.2
-  commands:
-  - echo $DRONE_RUNNER_NAME
-
-- name: initialize
-  image: grafana/build-container:1.4.3
-  commands:
-  - echo test
-  - mkdir -p bin
-  - curl -fL -o bin/grabpl https://grafana-downloads.storage.googleapis.com/grafana-build-pipeline/v2.4.6/grabpl
-  - chmod +x bin/grabpl
-  - yarn cache dir
-  - yarn install --frozen-lockfile --no-progress
-  environment:
-    DOCKERIZE_VERSION: 0.6.1
-    YARN_CACHE_FOLDER: /cache/yarn
-  volumes:
-  - name: cache
-    path: /cache
-  depends_on:
-  - restore-cache-yarn
-  - restore-cache-node-modules
-
 - name: codespell
   image: grafana/build-container:1.4.3
   commands:
@@ -148,6 +124,30 @@ steps:
   depends_on:
   - build-frontend
 
+- name: identify-runner
+  image: alpine:3.14.2
+  commands:
+  - echo $DRONE_RUNNER_NAME
+
+- name: initialize
+  image: grafana/build-container:1.4.3
+  commands:
+  - echo test
+  - mkdir -p bin
+  - curl -fL -o bin/grabpl https://grafana-downloads.storage.googleapis.com/grafana-build-pipeline/v2.4.6/grabpl
+  - chmod +x bin/grabpl
+  - yarn cache dir
+  - yarn install --frozen-lockfile --no-progress
+  environment:
+    DOCKERIZE_VERSION: 0.6.1
+    YARN_CACHE_FOLDER: /cache/yarn
+  volumes:
+  - name: cache
+    path: /cache
+  depends_on:
+  - restore-cache-yarn
+  - restore-cache-node-modules
+
 volumes:
 - name: cache
   temp: {}
@@ -206,6 +206,6 @@ get:
 
 ---
 kind: signature
-hmac: c8dba619067e14e27228bcf084ff1ccc3989a373536af8ad02929306c063d1d7
+hmac: 6a0723da1dade418b50b8c57beebf52e1d5eac8d255fe778ddaf3e0af66ee635
 
 ...
