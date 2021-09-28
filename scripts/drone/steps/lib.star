@@ -118,7 +118,8 @@ def initialize_step(edition, platform, ver_mode, is_downstream=False, install_de
             'name': 'initialize',
             'image': build_image,
             'depends_on': [
-                   'clone'
+                   'restore-cache-yarn',
+                   'restore-cache-node-modules'
                 ],
             'environment': {
                 'DOCKERIZE_VERSION': dockerize_version,

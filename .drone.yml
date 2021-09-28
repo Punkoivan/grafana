@@ -29,7 +29,8 @@ steps:
   - name: cache
     path: /cache
   depends_on:
-  - clone
+  - restore-cache-yarn
+  - restore-cache-node-modules
 
 - name: codespell
   image: grafana/build-container:1.4.3
@@ -205,6 +206,6 @@ get:
 
 ---
 kind: signature
-hmac: fbded9fcca5846517c20e3ee9bc43723a2bf5c7b5d22b2a0e8e643e9288bf290
+hmac: c8dba619067e14e27228bcf084ff1ccc3989a373536af8ad02929306c063d1d7
 
 ...
