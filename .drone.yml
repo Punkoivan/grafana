@@ -8,6 +8,39 @@ platform:
   arch: amd64
 
 steps:
+- name: restore-cache-yarn
+  pull: always
+  image: jduchesnegrafana/drone-cache:v1.2.0-rc0-dirtytest
+  settings:
+    backend: gcs
+    bucket: test-julien
+    cache_key: test123
+    json_key:
+      from_secret: tf_google_credentials
+    local_root: /cache
+    mount:
+    - yarn
+    restore: true
+  volumes:
+  - name: cache
+    path: /cache
+  depends_on:
+  - clone
+
+- name: restore-cache-node-modules
+  pull: always
+  image: jduchesnegrafana/drone-cache:v1.2.0-rc0-dirtytest
+  settings:
+    backend: gcs
+    bucket: test-julien
+    json_key:
+      from_secret: tf_google_credentials
+    mount:
+    - node_modules
+    restore: true
+  depends_on:
+  - clone
+
 - name: identify-runner
   image: alpine:3.14.2
   commands:
@@ -206,6 +239,6 @@ get:
 
 ---
 kind: signature
-hmac: 5bca2257833d33c19dccdd731cae601794ee280e33a5a1f842364655837d2f19
+hmac: 3f980e826b8a708c66a0d44551a39f2753a19d3a69ed7270dabcade72360f618
 
 ...
