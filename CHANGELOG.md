@@ -174,7 +174,7 @@ Panel and annotation queries using more than one statistic now converts into one
 ### Bug fixes
 
 - **CloudWatch Logs:** Fix crash when no region is selected. [#37639](https://github.com/grafana/grafana/pull/37639), [@aocenas](https://github.com/aocenas)
-- **Reporting:** Fix timezone parsing for scheduler (enterprise)
+- **Reporting:** Fix timezone parsing for scheduler. (Enterprise)
 
 <!-- 8.1.1 END -->
 <!-- 8.1.0 START -->
@@ -185,7 +185,9 @@ Panel and annotation queries using more than one statistic now converts into one
 
 - **Alerting:** Deduplicate receivers during migration. [#36812](https://github.com/grafana/grafana/pull/36812), [@codesome](https://github.com/codesome)
 - **ColorPicker:** Display colors as RGBA. [#37231](https://github.com/grafana/grafana/pull/37231), [@nikki-kiga](https://github.com/nikki-kiga)
-- **Select:** Make portalling the menu opt-in, but opt-in _everywhere_. [#37501](https://github.com/grafana/grafana/pull/37501), [@ashharrison90](https://github.com/ashharrison90)
+- **Encryption:** Add support for multiple encryption algorithms (aes-gcm). (Enterprise)
+- **Select:** Make portalling the menu opt-in, but opt-in *everywhere*. [#37501](https://github.com/grafana/grafana/pull/37501), [@ashharrison90](https://github.com/ashharrison90)
+- **TeamSync:** Batch team synchronization. (Enterprise)
 - **TimeRangePicker:** Improve accessibility. [#36912](https://github.com/grafana/grafana/pull/36912), [@tskarhed](https://github.com/tskarhed)
 
 ### Bug fixes

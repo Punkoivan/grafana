@@ -6,8 +6,9 @@ import { config } from '@grafana/runtime';
 import { configureStore } from 'app/store/configureStore';
 import PluginDetailsPage from './PluginDetails';
 import { getRouteComponentProps } from 'app/core/navigation/__mocks__/routeProps';
-import { CatalogPlugin } from '../types';
+import { CatalogPlugin, PluginTabIds, RequestStatus, ReducerState } from '../types';
 import * as api from '../api';
+import { fetchRemotePlugins } from '../state/actions';
 import { mockPluginApis, getCatalogPluginMock, getPluginsStateMock } from '../__mocks__';
 import { PluginErrorCode, PluginSignatureStatus } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
@@ -24,12 +25,21 @@ jest.mock('@grafana/runtime', () => {
   return mockedRuntime;
 });
 
-const renderPluginDetails = (pluginOverride: Partial<CatalogPlugin>): RenderResult => {
+const renderPluginDetails = (
+  pluginOverride: Partial<CatalogPlugin>,
+  {
+    pageId = PluginTabIds.OVERVIEW,
+    pluginsStateOverride,
+  }: {
+    pageId?: PluginTabIds;
+    pluginsStateOverride?: ReducerState;
+  } = {}
+): RenderResult => {
   const plugin = getCatalogPluginMock(pluginOverride);
   const { id } = plugin;
   const props = getRouteComponentProps({ match: { params: { pluginId: id }, isExact: true, url: '', path: '' } });
   const store = configureStore({
-    plugins: getPluginsStateMock([plugin]),
+    plugins: pluginsStateOverride || getPluginsStateMock([plugin]),
   });
 
   return render(
@@ -140,7 +150,8 @@ describe('Plugin details page', () => {
           },
         ],
       },
-    });
+      { pageId: PluginTabIds.VERSIONS }
+    );
 
     // Check if version information is available
     await waitFor(() => expect(queryByText(/version history/i)).toBeInTheDocument());
@@ -309,5 +320,41 @@ describe('Plugin details page', () => {
 
     // Check if the modal disappeared
     expect(queryByText('Uninstall Akumuli')).not.toBeInTheDocument();
+  });
+
+  it('should not display the install / uninstall / update buttons if the GCOM api is not available', async () => {
+    let rendered: RenderResult;
+    const plugin = getCatalogPluginMock({ id });
+    const state = getPluginsStateMock([plugin]);
+
+    // Mock the store like if the remote plugins request was rejected
+    const pluginsStateOverride = {
+      ...state,
+      requests: {
+        ...state.requests,
+        [fetchRemotePlugins.typePrefix]: {
+          status: RequestStatus.Rejected,
+        },
+      },
+    };
+
+    // Does not show an Install button
+    rendered = renderPluginDetails({ id }, { pluginsStateOverride });
+    await waitFor(() => expect(rendered.queryByRole('button', { name: /(un)?install/i })).not.toBeInTheDocument());
+    rendered.unmount();
+
+    // Does not show a Uninstall button
+    rendered = renderPluginDetails({ id, isInstalled: true }, { pluginsStateOverride });
+    await waitFor(() => expect(rendered.queryByRole('button', { name: /(un)?install/i })).not.toBeInTheDocument());
+    rendered.unmount();
+
+    // Does not show an Update button
+    rendered = renderPluginDetails({ id, isInstalled: true, hasUpdate: true }, { pluginsStateOverride });
+    await waitFor(() => expect(rendered.queryByRole('button', { name: /update/i })).not.toBeInTheDocument());
+
+    // Shows a message to the user
+    // TODO<Import these texts from a single source of truth instead of having them defined in multiple places>
+    const message = 'The install controls have been disabled because the Grafana server cannot access grafana.com.';
+    expect(rendered.getByText(message)).toBeInTheDocument();
   });
 });

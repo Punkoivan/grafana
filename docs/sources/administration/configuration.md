@@ -1165,6 +1165,28 @@ across larger clusters at the expense of increased bandwidth usage. The default 
 
 The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
 
+### execute_alerts
+
+Enable or disable alerting rule execution. The default value is `true`. The alerting UI remains visible. This option has a [legacy version in the alerting section]({{< relref "#execute_alerts-1">}}) that takes precedence.
+
+### evaluation_timeout
+
+Sets the alert evaluation timeout when fetching data from the datasource. The default value is `30s`. This option has a [legacy version in the alerting section]({{< relref "#evaluation_timeout_seconds">}}) that takes precedence.
+
+The timeout string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+
+### max_attempts
+
+Sets a maximum number of times we'll attempt to evaluate an alert rule before giving up on that evaluation. The default value is `3`. This option has a [legacy version in the alerting section]({{< relref "#max_attempts-1">}}) that takes precedence.
+
+### min_interval
+
+Sets the minimum interval to enforce between rule evaluations. The default value is `10s` which equals the scheduler interval. Rules will be adjusted if they are less than this value or if they are not multiple of the scheduler interval (10s). Higher values can help with resource management as we'll schedule fewer evaluations over time. This option has [a legacy version in the alerting section]({{< relref "#min_interval_seconds">}}) that takes precedence.
+
+The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+
+> **Note.** This setting has precedence over each individual rule frequency. If a rule frequency is lower than this value, then this value is enforced.
+
 <hr>
 
 ## [alerting]
