@@ -550,7 +550,7 @@ def codespell_step():
         'name': 'codespell',
         'image': build_image,
         'depends_on': [
-            'initialize',
+            'restore-cache-yarn',
         ],
         'commands': [
             # Important: all words have to be in lowercase, and separated by "\n".
@@ -564,7 +564,7 @@ def shellcheck_step():
         'name': 'shellcheck',
         'image': build_image,
         'depends_on': [
-            'initialize',
+            'restore-cache-yarn',
         ],
         'commands': [
             './bin/grabpl shellcheck',
