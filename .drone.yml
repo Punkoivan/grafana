@@ -80,39 +80,6 @@ steps:
   depends_on:
   - restore-cache-yarn
 
-- name: restore-cache-yarn
-  pull: always
-  image: jduchesnegrafana/drone-cache:v1.2.0-rc0-dirtytest
-  settings:
-    backend: gcs
-    bucket: test-julien
-    cache_key: test123
-    json_key:
-      from_secret: tf_google_credentials
-    local_root: /cache
-    mount:
-    - yarn
-    restore: true
-  volumes:
-  - name: cache
-    path: /cache
-  depends_on:
-  - clone
-
-- name: restore-cache-node-modules
-  pull: always
-  image: jduchesnegrafana/drone-cache:v1.2.0-rc0-dirtytest
-  settings:
-    backend: gcs
-    bucket: test-julien
-    json_key:
-      from_secret: tf_google_credentials
-    mount:
-    - node_modules
-    restore: true
-  depends_on:
-  - clone
-
 - name: lint-backend
   image: grafana/build-container:1.4.3
   commands:
@@ -239,6 +206,6 @@ get:
 
 ---
 kind: signature
-hmac: 3f980e826b8a708c66a0d44551a39f2753a19d3a69ed7270dabcade72360f618
+hmac: 8387372b3c9b97b0c9d472dbf74f32a9d0c0753f643860b9c1571ccc4eef4a66
 
 ...
