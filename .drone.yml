@@ -14,16 +14,13 @@ steps:
   - echo $DRONE_RUNNER_NAME
 
 - name: initialize
-  image: grafana/build-container:1.4.2
+  image: grafana/build-container:1.4.3
   commands:
   - echo test
   - mkdir -p bin
   - curl -fL -o bin/grabpl https://grafana-downloads.storage.googleapis.com/grafana-build-pipeline/v2.4.6/grabpl
   - chmod +x bin/grabpl
   - yarn cache dir
-  - curl -fLO https://github.com/jwilder/dockerize/releases/download/v$${DOCKERIZE_VERSION}/dockerize-linux-amd64-v$${DOCKERIZE_VERSION}.tar.gz
-  - tar -C bin -xzvf dockerize-linux-amd64-v$${DOCKERIZE_VERSION}.tar.gz
-  - rm dockerize-linux-amd64-v$${DOCKERIZE_VERSION}.tar.gz
   - yarn install --frozen-lockfile --no-progress
   environment:
     DOCKERIZE_VERSION: 0.6.1
@@ -35,7 +32,7 @@ steps:
   - clone
 
 - name: codespell
-  image: grafana/build-container:1.4.2
+  image: grafana/build-container:1.4.3
   commands:
   - "echo -e \"unknwon\nreferer\nerrorstring\neror\niam\nwan\" > words_to_ignore.txt"
   - codespell -I words_to_ignore.txt docs/
@@ -43,7 +40,7 @@ steps:
   - initialize
 
 - name: shellcheck
-  image: grafana/build-container:1.4.2
+  image: grafana/build-container:1.4.3
   commands:
   - ./bin/grabpl shellcheck
   depends_on:
@@ -83,7 +80,7 @@ steps:
   - clone
 
 - name: lint-backend
-  image: grafana/build-container:1.4.2
+  image: grafana/build-container:1.4.3
   commands:
   - make gen-go
   - ./bin/grabpl lint-backend --edition oss
@@ -91,7 +88,7 @@ steps:
     CGO_ENABLED: 1
 
 - name: test-frontend
-  image: grafana/build-container:1.4.2
+  image: grafana/build-container:1.4.3
   commands:
   - yarn run ci:test-frontend
   environment:
@@ -103,7 +100,7 @@ steps:
   - initialize
 
 - name: build-frontend
-  image: grafana/build-container:1.4.2
+  image: grafana/build-container:1.4.3
   commands:
   - ./bin/grabpl build-frontend --jobs 8 --no-install-deps --edition oss --build-id ${DRONE_BUILD_NUMBER} --no-pull-enterprise
   environment:
@@ -208,6 +205,6 @@ get:
 
 ---
 kind: signature
-hmac: 31d9fd4469e4d88aef9c0fcbf227793a0fd187914c7b104af5b32c5f96a5ef26
+hmac: fbded9fcca5846517c20e3ee9bc43723a2bf5c7b5d22b2a0e8e643e9288bf290
 
 ...
